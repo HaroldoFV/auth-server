@@ -2,6 +2,7 @@ package database
 
 import (
 	"auth-server/internal/domain"
+	"auth-server/internal/errs"
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
@@ -67,7 +68,7 @@ func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) GetByName(name string) (*domain.User, error) {
+func (r *UserRepository) GetByName(name string) (*domain.User, *errs.AppError) {
 	query := "SELECT id, name, email, password, status, created_at FROM users WHERE name = $1"
 
 	row := r.Db.QueryRow(query, name)
@@ -79,14 +80,14 @@ func (r *UserRepository) GetByName(name string) (*domain.User, error) {
 	err := row.Scan(&idStr, &nameStr, &email, &password, &status, &createdAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("user with name %s not found", name)
+			return nil, errs.NewValidationError(fmt.Sprintf("user with name %s not found", name))
 		}
-		return nil, err
+		return nil, errs.NewValidationError(err.Error())
 	}
 
 	user, err = domain.NewUser(name, email, password)
 	if err != nil {
-		return nil, err
+		return nil, errs.NewValidationError(err.Error())
 	}
 
 	user.SetID(idStr)
@@ -98,7 +99,7 @@ func (r *UserRepository) GetByName(name string) (*domain.User, error) {
 		err = user.Disable()
 	}
 	if err != nil {
-		return nil, err
+		return nil, errs.NewValidationError(err.Error())
 	}
 
 	return user, nil

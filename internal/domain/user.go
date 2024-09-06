@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"regexp"
@@ -24,6 +25,10 @@ type User struct {
 }
 
 func NewUser(name, email, password string) (*User, error) {
+	if strings.TrimSpace(name) == "" {
+		return nil, errors.New("name cannot be empty or consist only of whitespace characters")
+	}
+
 	if len(password) < 8 {
 		return nil, errors.New("password must be at least 8 characters long")
 	}
@@ -32,14 +37,15 @@ func NewUser(name, email, password string) (*User, error) {
 		return nil, errors.New("password cannot consist only of whitespace characters")
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(strings.TrimSpace(password)), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error hashing password: %w", err)
 	}
+
 	user := &User{
 		id:        uuid.New().String(),
-		name:      name,
-		email:     email,
+		name:      strings.TrimSpace(name),
+		email:     strings.TrimSpace(email),
 		password:  string(hash),
 		status:    ENABLED,
 		createdAt: time.Now(),

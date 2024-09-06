@@ -11,9 +11,9 @@ Content-Type:{{contentType}}
   "email":"j@j.com",
   "password":"12345678"
 }
-{
-  "id": "544bc433-3185-453d-96e2-ae1ad81f8d11",
-  "name": "John Doe",
-  "email": "j@j.com",
-  "status": "enabled"
-}
+#{
+#  "id": "be0e6681-1cb2-41dd-b897-86aecdc68804",
+#  "name": "John Doe",
+#  "email": "j@j.com",
+#  "status": "enabled"
+#}

@@ -21,7 +21,7 @@ func TestNewUser(t *testing.T) {
 		user, err := NewUser("", "j@j.com", "12345678")
 		assert.NotNil(t, err)
 		assert.Nil(t, user)
-		assert.Equal(t, "name cannot be empty", err.Error())
+		assert.Equal(t, "name cannot be empty or consist only of whitespace characters", err.Error())
 
 	})
 

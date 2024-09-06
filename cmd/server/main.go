@@ -3,7 +3,6 @@ package main
 import (
 	adapters_http "auth-server/internal/adapters/incoming/http"
 	"auth-server/internal/adapters/incoming/http/server"
-	"auth-server/internal/adapters/outgoing/jwt"
 	database "auth-server/internal/adapters/outgoing/repository"
 	"auth-server/internal/application/services"
 	"auth-server/internal/configs"
@@ -37,13 +36,13 @@ func main() {
 	defer db.Close()
 
 	userRepository := database.NewUserRepository(db)
-	tokenGen := jwt.NewTokenGenerator(config.JWTSecret)
-	authService := services.NewAuthService(userRepository, tokenGen)
+	//tokenGen := jwt.NewTokenGenerator(config.JWTSecret)
+	authService := services.NewAuthService(userRepository)
 	authHandler := adapters_http.NewAuthHandler(authService)
 
 	webServer := server.NewWebServer(":" + config.WebServerPort)
 
-	webServer.AddHandler(http.MethodPost, "/login", authHandler.Login)
+	//webServer.AddHandler(http.MethodPost, "/login", authHandler.Login)
 	webServer.AddHandler(http.MethodPost, "/register", authHandler.Register)
 
 	fmt.Println("Starting web server on port", config.WebServerPort)
